@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الشات - Socket.io</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+    <h2>اختبار الشات - ريال تايم</h2>
+    <label for="userId">معرّفك (ID):</label>
+    <input type="text" id="userId" placeholder="ادخل ID الخاص بك" disabled />
+    <label for="receiverId">معرّف المستقبل (ID):</label>
+    <input type="text" id="receiverId" placeholder="ادخل ID المستقبل" />
+    <br><br>
+    <input type="text" id="messageInput" placeholder="اكتب رسالة..." />
+    <button onclick="sendMessage()">إرسال</button>
+    <h3>الرسائل:</h3>
+    <ul id="messages"></ul>
+    <script>
+        const socket = io("https://chat120-abb88025e3e2.herokuapp.com/");
+        let userId = prompt("ادخل الـ ID الخاص بك:");
+        if (!userId) {
+            alert("يجب إدخال ID للمتابعة!");
+            location.reload();
+        } else {
+            document.getElementById("userId").value = userId;
+            socket.emit("join", userId);
+        }
+        socket.on("connect", () => {
+            console.log("✅ تم الاتصال بالسيرفر");
+        });
+        socket.on("receiveMessage", (data) => {
+            console.log("📩 رسالة مستلمة:", data);
+
+            const messageList = document.getElementById("messages");
+            const newMessage = document.createElement("li");
+            newMessage.textContent = `${data.senderId} -> ${data.recipientId}: ${data.message}`;
+            messageList.appendChild(newMessage);
+        });
+        function sendMessage() {
+            const receiverId = document.getElementById("receiverId").value.trim();
+            const message = document.getElementById("messageInput").value.trim();
+            if (!userId || !receiverId || !message) {
+                alert("يرجى إدخال الـ ID الخاص بك و الـ ID المستقبل والرسالة!");
+                return;
+            }
+            console.log("🚀 إرسال رسالة:", { senderId: userId, recipientId: receiverId, message });
+            socket.emit("sendMessage", {
+                senderId: userId,
+                recipientId: receiverId,
+                message: message
+            });
+            document.getElementById("messageInput").value = "";    
+        }
+    </script>
+</body>
+</html>
