@@ -8,7 +8,7 @@ const messageSchema = new mongoose.Schema(
             required: [true, 'Chat ID is required']
         },
         senderId: {
-            type: String,
+            type: mongoose.Schema.ObjectId,
             ref: "User",
             required: [true, 'Sender ID is required']
         },

@@ -1,9 +1,9 @@
 const messageService = require('../services/message_service');
-const { validate: isUUID } = require('uuid');
+const mongoose = require('mongoose');
 
 const sendMessage = async (req, res) => {
     const { senderId, recipientId, message, timestamp } = req.body;
-    if (!isUUID(senderId) || !isUUID(recipientId)) {
+    if (!mongoose.Types.ObjectId.isValid(senderId) || !mongoose.Types.ObjectId.isValid(recipientId)) {
         return res.status(400).json({ status: "false", message: 'Invalid user IDs' });
     }
     try {
@@ -23,7 +23,7 @@ const getMessages = async (req, res) => {
     if (!user1Id || !user2Id) {
         return res.status(400).json({ status: "false", message: 'Both user1Id and user2Id are required' });
     }
-    if (!isUUID(user1Id) || !isUUID(user2Id)) {
+    if (!mongoose.Types.ObjectId.isValid(user1Id) || !mongoose.Types.ObjectId.isValid(user2Id)) {
         return res.status(400).json({ status: "false", message: 'Invalid user IDs' });
     }
     try {
